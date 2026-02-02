@@ -1,0 +1,46 @@
+# 敏感配置文件
+*.ini
+config.*
+.env
+*.key
+*.secret
+
+# 用户数据
+output/
+*.log
+cookies.json
+data/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 临时文件
+*.tmp
+*.bak
+*~
+
+# 测试生成的图片
+test-images/
+*.png
+*.jpg
+*.jpeg
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
