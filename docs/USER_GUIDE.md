@@ -22,9 +22,17 @@
 **自定义位置**：在 EXTEND.md 配置文件中设置：
 
 ```bash
-# 创建配置文件
-mkdir -p ~/.baoyu-skills/bxz-xhs
-cat > ~/.baoyu-skills/bxz-xhs/EXTEND.md << 'EOF'
+# 创建配置文件（skill 级别）
+mkdir -p .claude/skills/bxz-xhs
+cat > .claude/skills/bxz-xhs/EXTEND.md << 'EOF'
+---
+output_dir: ~/Documents/xhs-images  # 改成你想要的路径
+---
+EOF
+
+# 或用户级别（推荐）
+mkdir -p ~/.claude/skills/bxz-xhs
+cat > ~/.claude/skills/bxz-xhs/EXTEND.md << 'EOF'
 ---
 output_dir: ~/Documents/xhs-images  # 改成你想要的路径
 ---
@@ -60,8 +68,10 @@ EOF
 ### 3. 检查配置
 
 ```bash
-# 查看输出目录配置
-cat ~/.baoyu-skills/bxz-xhs/EXTEND.md
+# 查看输出目录配置（skill 级别或用户级别）
+cat .claude/skills/bxz-xhs/EXTEND.md
+# 或
+cat ~/.claude/skills/bxz-xhs/EXTEND.md
 
 # 查看 API Key 配置
 cat ~/.config/bxz-xhs/config.ini
@@ -259,9 +269,38 @@ cd ~/Myxhs/{主题slug}
 # 或你的自定义路径
 cd ~/Documents/xhs-images/{主题slug}
 
-# 运行发布脚本
-python3 ~/.claude/skills/bxz-xhs/scripts/auto_publish.py
+# 运行发布脚本（带健康检查）
+python3 ~/.claude/skills/bxz-xhs/scripts/auto_publish.py .
+
+# 调试模式（查看详细日志）
+python3 ~/.claude/skills/bxz-xhs/scripts/auto_publish.py . --debug
+
+# 快速发布（禁用反检测和时间调度）
+python3 ~/.claude/skills/bxz-xhs/scripts/auto_publish.py . --no-anti-detect --no-schedule
+
+# 预览模式（不实际发布）
+python3 ~/.claude/skills/bxz-xhs/scripts/auto_publish.py . --dry-run
 ```
+
+**新增功能说明**：
+
+| 选项 | 作用 | 使用场景 |
+|------|------|---------|
+| `--debug` | 调试模式，输出详细日志 | 排查问题时使用 |
+| `--skip-health-check` | 跳过发布前健康检查 | 确认服务正常时使用 |
+| `--no-anti-detect` | 禁用反检测（快速但有风险） | 测试或紧急发布 |
+| `--no-schedule` | 禁用时间调度（立即发布） | 需要立即发布 |
+| `--dry-run` | 预览模式，不实际发布 | 检查内容是否正确 |
+
+**发布前健康检查**（自动执行）：
+
+默认情况下，发布脚本会自动检查以下项目：
+- ✓ 端口 18060 是否监听
+- ✓ xiaohongshu-mcp 进程是否运行
+- ✓ cookies 文件是否存在（登录状态）
+- ✓ API 服务是否响应
+
+如果健康检查失败，发布会中止并显示具体问题。
 
 ### 发布前检查清单
 
@@ -292,6 +331,127 @@ cd ~/xiaohongshu-mcp
 
 # 5. 查看服务日志（可选）
 tail -f /tmp/xiaohongshu-mcp.log
+```
+
+---
+
+## 首次安装 xiaohongshu-mcp（自动发布功能）
+
+### 下载安装
+
+```bash
+# 1. 创建工作目录
+cd ~
+mkdir -p xiaohongshu-mcp
+cd xiaohongshu-mcp
+
+# 2. 下载最新版本（访问官方 GitHub Releases）
+# https://github.com/naturallaw/xiaohongshu-mcp/releases
+
+# 下载对应的文件：
+# - xiaohongshu-mcp (macOS/Linux 可执行文件)
+# - xiaohongshu-login (登录工具)
+
+# 3. 添加执行权限
+chmod +x xiaohongshu-mcp xiaohongshu-login
+```
+
+### 一次性目录设置
+
+**为什么需要这个步骤**：自动发布会将图片复制到本地 `~/xiaohongshu-mcp/images/`，需要先创建目录。
+
+```bash
+# 创建图片目录
+mkdir -p ~/xiaohongshu-mcp/images
+
+# 验证目录创建成功
+ls -la ~/xiaohongshu-mcp/images
+```
+
+### 登录小红书
+
+```bash
+cd ~/xiaohongshu-mcp
+
+# 运行登录工具（会打开浏览器）
+./xiaohongshu-login
+
+# 在浏览器中：
+# 1. 选择"扫码登录"或"账号密码登录"
+# 2. 完成登录后关闭浏览器
+# 3. 终端会显示：当前登录状态: true
+```
+
+### 启动发布服务
+
+**方式 1：前台运行（推荐首次使用）**
+```bash
+cd ~/xiaohongshu-mcp
+./xiaohongshu-mcp -headless=false
+# 服务启动，日志会直接显示在终端
+# Ctrl+C 可以停止服务
+```
+
+**方式 2：后台运行**
+```bash
+cd ~/xiaohongshu-mcp
+./xiaohongshu-mcp -headless=false > /tmp/xiaohongshu-mcp.log 2>&1 &
+
+# 查看日志
+tail -f /tmp/xiaohongshu-mcp.log
+
+# 停止服务
+pkill -f xiaohongshu-mcp
+```
+
+### 验证服务运行
+
+```bash
+# 1. 检查进程
+pgrep -f xiaohongshu-mcp
+
+# 2. 检查端口
+lsof -i :18060
+
+# 3. 测试 API（应该返回 404，这是正常的）
+curl http://localhost:18060/api/v1/publish
+```
+
+---
+
+## 快速启动脚本（可选）
+
+创建快捷命令，方便管理服务：
+
+```bash
+# 创建启动脚本
+cat > ~/start-xiaohongshu.sh << 'EOF'
+#!/bin/bash
+cd ~/xiaohongshu-mcp
+./xiaohongshu-mcp -headless=false > /tmp/xiaohongshu-mcp.log 2>&1 &
+echo "xiaohongshu-mcp 已启动（PID: $!）"
+echo "日志: tail -f /tmp/xiaohongshu-mcp.log"
+EOF
+
+chmod +x ~/start-xiaohongshu.sh
+
+# 创建停止脚本
+cat > ~/stop-xiaohongshu.sh << 'EOF'
+#!/bin/bash
+pkill -f xiaohongshu-mcp
+echo "xiaohongshu-mcp 已停止"
+EOF
+
+chmod +x ~/stop-xiaohongshu.sh
+```
+
+**使用方法**：
+```bash
+# 启动服务
+~/start-xiaohongshu.sh
+
+# 停止服务
+~/stop-xiaohongshu.sh
 ```
 
 ---
@@ -391,13 +551,36 @@ cp /path/to/your/image.png ~/Documents/xhs-images/{主题slug}/
 
 ### Q: 发布失败了怎么办？
 
-**A**: 检查以下几点：
+**A**: 使用调试模式排查问题：
 
-1. **服务状态**：`ps aux | grep xiaohongshu-mcp`
-2. **服务日志**：`tail -f /tmp/xiaohongshu-mcp.log`
-3. **登录状态**：`~/xiaohongshu-mcp/xiaohongshu-login`
-4. **图片路径**：确认 `.png` 文件在会话目录下
-5. **文字文件**：确认有文件名包含 `source` 的文件
+```bash
+# 1. 使用调试模式运行，查看详细日志
+python3 ~/.claude/skills/bxz-xhs/scripts/auto_publish.py . --debug
+
+# 2. 检查服务状态
+pgrep -f xiaohongshu-mcp
+
+# 3. 检查端口监听
+lsof -i :18060
+
+# 4. 查看服务日志
+tail -f /tmp/xiaohongshu-mcp.log
+
+# 5. 检查登录状态
+cd ~/xiaohongshu-mcp && ./xiaohongshu-login
+
+# 6. 如果服务未运行，重启服务
+cd ~/xiaohongshu-mcp && ./xiaohongshu-mcp -headless=false
+```
+
+**常见错误及解决方法**：
+
+| 错误信息 | 可能原因 | 解决方法 |
+|---------|---------|---------|
+| `端口 18060 未监听` | 服务未启动 | 运行 `./xiaohongshu-mcp` |
+| `cookies 文件不存在` | 未登录小红书 | 运行 `./xiaohongshu-login` |
+| `图片文件不存在` | 图片路径错误 | 确认 `.png` 文件在会话目录 |
+| `API 服务连接失败` | 服务响应异常 | 检查服务日志并重启 |
 
 ### Q: 我的文字文件为什么没被识别？
 
@@ -418,6 +601,36 @@ ls -la ~/Myxhs/{主题}/
 - **标题**：修改 `outline.md` 中封面页的 Hook
 - **内容**：修改 `source-article.md` 或创建新的 `source-*.md` 文件
 - **图片**：修改对应的 `.png` 文件
+
+### Q: 如何使用调试模式？
+
+**A**: 添加 `--debug` 参数运行：
+
+```bash
+# 调试模式会显示：
+# - 健康检查详细过程
+# - 图片复制路径
+# - API 请求响应
+# - 每个步骤的执行状态
+
+python3 auto_publish.py . --debug
+```
+
+### Q: 健康检查是什么？可以跳过吗？
+
+**A**: 健康检查是发布前自动运行的验证步骤，确保服务正常。
+
+**检查项目**：
+- 端口 18060 是否监听
+- xiaohongshu-mcp 进程是否运行
+- cookies 文件是否存在（登录状态）
+- API 服务是否响应正常
+
+**跳过方法**：
+```bash
+# 如果确认服务正常，可以跳过健康检查
+python3 auto_publish.py . --skip-health-check
+```
 
 ---
 
@@ -529,8 +742,12 @@ cat ~/.config/bxz-xhs/config.ini
 # 3. 配置文件（可选）
 cat ~/.baoyu-skills/bxz-xhs/EXTEND.md
 
-# 4. 发布服务检查（如需发布）
+# 4. 发布服务检查（如需自动发布功能）
 cd ~/xiaohongshu-mcp
+
+# 4.0 一次性设置
+# 创建图片目录
+mkdir -p ~/xiaohongshu-mcp/images
 
 # 4.1 检查登录状态
 ./xiaohongshu-login
@@ -546,6 +763,7 @@ cd ~/xiaohongshu-mcp
 ```
 
 **快速发布流程**：
-1. 先用 `xiaohongshu-login` 登录小红书
-2. 再用 `xiaohongshu-mcp -headless=false` 启动发布服务
-3. 最后运行 `auto_publish.py` 自动发布
+1. 一次性设置：`mkdir -p ~/xiaohongshu-mcp/images`
+2. 登录小红书：`xiaohongshu-login`
+3. 启动发布服务：`xiaohongshu-mcp -headless=false &`
+4. 运行发布脚本：`auto_publish.py .`

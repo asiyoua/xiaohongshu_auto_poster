@@ -55,31 +55,6 @@ chmod +x ./xiaohongshu-mcp
 # 服务将在 http://localhost:18060 运行
 ```
 
-#### 方式 B: Docker 运行（备选）
-
-```bash
-# 1. 创建目录
-mkdir -p ~/xiaohongshu-mcp/images
-cd ~/xiaohongshu-mcp
-
-# 2. 创建 docker-compose.yml
-cat > docker-compose.yml << 'EOF'
-services:
-  xiaohongshu-mcp:
-    image: xpzouying/xiaohongshu-mcp
-    container_name: xiaohongshu-mcp
-    restart: unless-stopped
-    volumes:
-      - ./data:/app/data
-      - ./images:/app/images
-    ports:
-      - "18060:18060"
-EOF
-
-# 3. 启动
-docker compose up -d
-```
-
 ### 2. 登录小红书账号
 
 **重要**：使用独立的登录工具 `xiaohongshu-login`
@@ -176,7 +151,7 @@ cd ~/xiaohongshu-mcp && ./xiaohongshu-mcp
 
 ```bash
 # 删除旧的 cookies
-rm ~/xiaohongshu-mcp/data/cookies.json
+rm ~/xiaohongshu-mcp/cookies.json
 
 # 重启服务并重新登录
 cd ~/xiaohongshu-mcp && ./xiaohongshu-mcp
@@ -206,7 +181,7 @@ ls ~/xiaohongshu-mcp/images/
 | `~/.claude/skills/bxz-xhs/scripts/auto_publish.py` | 自动发布脚本 |
 | `~/.claude/skills/bxz-xhs/docs/` | 文档目录 |
 | `~/.config/bxz-xhs/config.ini` | Gemini Nano Banana API Key |
-| `~/xiaohongshu-mcp/data/cookies.json` | 小红书登录状态 |
+| `~/xiaohongshu-mcp/cookies.json` | 小红书登录状态 |
 | `~/Myxhs/` | 输出目录（会话结果） |
 
 ---

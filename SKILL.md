@@ -13,23 +13,23 @@ Break down complex content into eye-catching infographic series for Xiaohongshu 
 
 ```bash
 # Auto-select style and layout based on content
-/baoyu-xhs-images posts/ai-future/article.md
+/bxz-xhs posts/ai-future/article.md
 
 # Specify style
-/baoyu-xhs-images posts/ai-future/article.md --style notion
+/bxz-xhs posts/ai-future/article.md --style notion
 
 # Specify layout
-/baoyu-xhs-images posts/ai-future/article.md --layout dense
+/bxz-xhs posts/ai-future/article.md --layout dense
 
 # Combine style and layout
-/baoyu-xhs-images posts/ai-future/article.md --style notion --layout list
+/bxz-xhs posts/ai-future/article.md --style notion --layout list
 
 # Direct content input
-/baoyu-xhs-images
+/bxz-xhs
 [paste content]
 
 # Direct input with options
-/baoyu-xhs-images --style bold --layout comparison
+/bxz-xhs --style bold --layout comparison
 [paste content]
 ```
 
@@ -192,19 +192,19 @@ Input → Analyze → [Confirm 1] → 3 Outlines → [Confirm 2: Outline + Style
 Use Bash to check EXTEND.md existence (priority order):
 
 ```bash
-# Check project-level first
-test -f .baoyu-skills/bxz-xhs/EXTEND.md && echo "project"
+# Check skill-level first
+test -f .claude/skills/bxz-xhs/EXTEND.md && echo "skill"
 
 # Then user-level (cross-platform: $HOME works on macOS/Linux/WSL)
-test -f "$HOME/.baoyu-skills/bxz-xhs/EXTEND.md" && echo "user"
+test -f "$HOME/.claude/skills/bxz-xhs/EXTEND.md" && echo "user"
 ```
 
 ┌────────────────────────────────────────────────────┬───────────────────┐
 │                        Path                        │     Location      │
 ├────────────────────────────────────────────────────┼───────────────────┤
-│ .baoyu-skills/bxz-xhs/EXTEND.md                    │ Project directory │
+│ .claude/skills/bxz-xhs/EXTEND.md                   │ Skill directory   │
 ├────────────────────────────────────────────────────┼───────────────────┤
-│ $HOME/.baoyu-skills/bxz-xhs/EXTEND.md              │ User home         │
+│ $HOME/.claude/skills/bxz-xhs/EXTEND.md             │ User home         │
 └────────────────────────────────────────────────────┴───────────────────┘
 
 ┌───────────┬───────────────────────────────────────────────────────────────────────────┐
@@ -451,7 +451,7 @@ With confirmed outline + style + layout:
 
 **API Key Configuration** (按优先级查找):
 1. 用户级配置: `~/.config/bxz-xhs/config.ini` (推荐)
-2. 项目级配置: `.baoyu-skills/bxz-xhs/config.ini`
+2. 技能级配置: `.claude/skills/bxz-xhs/config.ini`
 
 **首次使用配置** (推荐方式 1 - 用户级配置):
 ```bash
@@ -478,14 +478,16 @@ If image generation skill supports `--sessionId`:
 ### Step 6: Completion Report
 
 ```
-Xiaohongshu Infographic Series Complete!
+════════════════════════════════════════════════════════════
+✅ 小红书图片生成完成！
+════════════════════════════════════════════════════════════
 
-Topic: [topic]
-Strategy: [A/B/C/Combined]
-Style: [style name]
-Layout: [layout name or "varies"]
-Location: [directory path]
-Images: N total
+主题: [topic]
+策略: [A/B/C/Combined]
+风格: [style name]
+布局: [layout name or "varies"]
+位置: [directory path]
+图片: N total
 
 ✓ analysis.md
 ✓ outline-strategy-a.md
@@ -498,60 +500,15 @@ Files:
 - 02-content-[slug].png ✓ Content (balanced)
 - 03-content-[slug].png ✓ Content (dense)
 - 04-ending-[slug].png ✓ Ending (sparse)
-```
+════════════════════════════════════════════════════════════
 
-**Step 7: Optional Auto-Publish** 📱
+📱 想发布到小红书？
 
-After showing completion report, ask user if they want to publish:
+运行以下命令：
+  /bxz-xhs-publisher {directory}
 
-```python
-# Use AskUserQuestion
-question: "图片已生成完成！是否立即发布到小红书？"
-
-options:
-  - Yes: 全自动发布
-    → Run ~/Myxhs/auto_publish.py
-    → 自动提取标题、内容
-    → 自动发布到小红书 (xiaohongshu-mcp)
-    → 完成！
-
-  - Preview: 预览后发布
-    → 显示将要发布的标题和内容
-    → 用户确认后再发布
-
-  - No: 仅保存图片
-    → Images saved to ~/Myxhs/{topic}/
-    → 可以后续手动发布
-```
-
-**Implementation**:
-
-```python
-# 全自动发布（推荐）
-import subprocess
-
-session_dir = f"/Users/bian/Myxhs/{slug}"
-
-# 运行自动发布脚本
-result = subprocess.run([
-    "python3", "/Users/bian/.claude/skills/bxz-xhs/scripts/auto_publish.py",
-    session_dir
-], capture_output=True, text=True)
-
-if result.returncode == 0:
-    print("✓ 发布成功！")
-else:
-    print(f"发布失败: {result.stderr}")
-```
-
-**Requirements**:
-- xiaohongshu-mcp 服务运行中 (`~/xiaohongshu-mcp/xiaohongshu-mcp`)
-- 已登录小红书账号
-
-**Manual Publish Later**:
-```bash
-# 之后随时可以发布
-python3 ~/.claude/skills/bxz-xhs/scripts/auto_publish.py ~/Myxhs/{topic-slug}
+或预览模式：
+  /bxz-xhs-publisher {directory} --preview
 ```
 
 ## Image Modification
