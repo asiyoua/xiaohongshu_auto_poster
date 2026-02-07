@@ -1,1 +1,1 @@
-配置 mcp：https://github.com/xpzouying/xiaohongshu-mcp
+配置 mcp：https://github.com/myzxlin/redbook-mcp
