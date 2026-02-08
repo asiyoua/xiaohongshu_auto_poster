@@ -3,11 +3,25 @@
  * 小红书发布脚本 - 使用 redbook-mcp
  */
 
-import { RedbookPoster } from '/Users/bian/.claude/mcp-servers/redbook-mcp/redbook-poster.js';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-const jsonPath = '/Users/bian/.claude/mcp-servers/redbook-data';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// 计算相关路径（支持多种安装场景）
+const skillBase = path.resolve(__dirname, '../../..');
+const mcpBase = path.join(skillBase, '.claude/mcp-servers/redbook-mcp');
+const jsonPath = path.join(skillBase, '.claude/mcp-servers/redbook-data');
+
+// 动态导入 RedbookPoster
+async function getRedbookPoster() {
+  const posterPath = path.join(mcpBase, 'redbook-poster.js');
+  const module = await import(posterPath);
+  return module.RedbookPoster;
+}
 
 
 function extractFromOutline(outlinePath) {
@@ -76,6 +90,7 @@ function findImages(sessionDir) {
 
 
 export async function publishToXiaohongshu(sessionDir, previewMode = false) {
+  const RedbookPoster = await getRedbookPoster();
   const poster = new RedbookPoster(jsonPath);
 
   try {

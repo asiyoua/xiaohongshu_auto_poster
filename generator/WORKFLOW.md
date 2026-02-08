@@ -291,7 +291,7 @@ cat > ~/.claude/mcp_settings.json << 'EOF'
   "mcpServers": {
     "redbook": {
       "command": "node",
-      "args": ["/Users/bian/.claude/mcp-servers/redbook-mcp/index.js"]
+      "args": ["~/.claude/mcp-servers/redbook-mcp/index.js"]
     }
   }
 }

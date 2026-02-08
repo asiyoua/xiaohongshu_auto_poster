@@ -34,4 +34,4 @@ You can edit the YAML frontmatter above to change settings:
 - `preferred_layout`: Set a default layout (sparse, balanced, dense, etc.)
 - `language`: Force a specific language (zh, en)
 
-For full schema, see: `/Users/bian/.claude/skills/bxz-xhs/references/config/preferences-schema.md`
+For full schema, see: `~/.claude/skills/bxz-xhs/references/config/preferences-schema.md`

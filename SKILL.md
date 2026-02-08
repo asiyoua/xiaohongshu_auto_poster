@@ -132,7 +132,7 @@ Three differentiated outline strategies for different content goals:
 Each session creates an independent directory named by content slug:
 
 ```
-/Users/bian/Myxhs/{topic-slug}/
+~/Myxhs/{topic-slug}/
 ├── source-{slug}.{ext}             # Source files (text, images, etc.)
 ├── analysis.md                     # Deep analysis + questions asked
 ├── outline-strategy-a.md           # Strategy A: Story-driven
@@ -406,7 +406,7 @@ for preview in previews:
 - Better user confidence before committing to full generation
 
 **Fallback:**
-If image generation fails, still show static sample previews from `/Users/bian/.claude/skills/bxz-xhs/previews/*.webp`
+If image generation fails, still show static sample previews from `previews/*.webp` (in skill directory)
 
 **Question to ask:**
 "请查看图片查看器中的 3 张预览图（基于你的内容生成），选择你喜欢的风格："
