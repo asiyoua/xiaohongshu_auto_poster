@@ -1,0 +1,9 @@
+# MCP dependencies
+mcp/node_modules/
+
+# User preferences
+generator/EXTEND.md
+
+# Build artifacts
+*.log
+.DS_Store

@@ -19,16 +19,28 @@
 git clone https://github.com/asiyoua/xiaohongshu_auto_poster.git ~/.claude/skills/bxz-xhs
 cd ~/.claude/skills/bxz-xhs
 
-# 2. 配置 Gemini API Key
+# 2. 安装 MCP 服务器（用于自动发布）
+mkdir -p ~/.claude/mcp-servers
+cp -r mcp ~/.claude/mcp-servers/redbook-mcp
+cd ~/.claude/mcp-servers/redbook-mcp
+npm install
+
+# 3. 配置 Gemini API Key
 mkdir -p ~/.config/bxz-xhs
 cat > ~/.config/bxz-xhs/config.ini << EOF
 [gemini_nano]
 api_key=YOUR_API_KEY_HERE
 EOF
 
-# 3. 详细安装指南请查看
-cat generator/WORKFLOW.md
+# 4. 详细安装指南请查看
+cat ~/.claude/skills/bxz-xhs/generator/WORKFLOW.md
 ```
+
+**MCP 服务器说明**：
+- 本项目包含完整的 MCP 服务器代码（在 `mcp/` 目录）
+- 支持拟人化操作，降低机器人检测风险
+- 包含随机延迟、人类打字、鼠标轨迹等防检测功能
+- 无需额外下载，一步安装完成
 
 ### 使用
 
@@ -61,6 +73,12 @@ xiaohongshu_auto_poster/
 │   ├── config.example.ini      # 配置文件示例
 │   └── scripts/
 │       └── publish_with_mcp.js # 发布脚本
+├── mcp/                        # MCP 服务器（拟人化发布）⭐
+│   ├── index.js                # MCP 入口
+│   ├── redbook-poster.js       # 拟人化发布核心
+│   ├── utils.js                # 工具函数
+│   ├── package.json            # 依赖配置
+│   └── README.md               # MCP 说明文档
 └── .gitignore
 ```
 
@@ -122,7 +140,8 @@ xiaohongshu_auto_poster/
 | 组件 | 技术 | 说明 |
 |------|------|------|
 | **AI 生成** | Gemini 3 Pro Image Preview | 高质量图片生成 |
-| **浏览器自动化** | Playwright + Chrome | 稳定可靠，反爬虫检测率低 |
+| **浏览器自动化** | Playwright + Chrome | 稳定可靠 |
+| **拟人化操作** | 随机延迟 + 人类打字 + 鼠标轨迹 | 降低机器人检测风险 |
 | **通信协议** | MCP (Model Context Protocol) | Claude Code 扩展标准 |
 | **登录方式** | 扫码登录 | 无需手机号，长期有效 |
 
