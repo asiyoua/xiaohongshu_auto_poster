@@ -64,17 +64,28 @@ xiaohongshu_auto_poster/
 └── .gitignore
 ```
 
-### 技能目录
+### 技能安装目录
 
 ```
 ~/.claude/skills/
 ├── bxz-xhs/                    # 图片生成技能（本仓库）
-│   ├── SKILL.md
-│   ├── generator/
-│   └── publisher/
-└── bxz-xhs-publisher/          # 发布技能（符号链接）
-    ├── SKILL.md -> ../bxz-xhs/publisher/SKILL.md
-    └── scripts/ -> ../bxz-xhs/publisher/scripts/
+│   ├── SKILL.md                # 技能定义文件
+│   ├── generator/              # 生成工具相关
+│   │   ├── WORKFLOW.md         # 完整使用指南
+│   │   ├── EXTEND.md           # 用户偏好配置
+│   │   ├── HISTORY.md          # 开发历史
+│   │   ├── references/         # 风格参考
+│   │   └── previews/           # 预览图
+│   ├── publisher/              # 发布工具相关
+│   │   ├── SKILL.md            # 发布技能定义
+│   │   ├── config.example.ini  # 配置示例
+│   │   └── scripts/
+│   │       └── publish_with_mcp.js
+│   └── README.md               # 本文件
+│
+└── bxz-xhs-publisher/          # 发布技能（独立技能目录）
+    ├── SKILL.md                # 技能定义文件
+    └── scripts -> ../bxz-xhs/publisher/scripts  # 符号链接
 ```
 
 ## 📖 文档
