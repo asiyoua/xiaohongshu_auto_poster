@@ -134,6 +134,7 @@ Each session creates an independent directory named by content slug:
 ```
 ~/Myxhs/{topic-slug}/
 ├── source-{slug}.{ext}             # Source files (text, images, etc.)
+├── post.md                         # 小红书发布文案（标题+正文+标签）
 ├── analysis.md                     # Deep analysis + questions asked
 ├── outline-strategy-a.md           # Strategy A: Story-driven
 ├── outline-strategy-b.md           # Strategy B: Information-dense
@@ -173,16 +174,17 @@ XHS Infographic Progress:
 - [ ] Step 0: Check preferences (EXTEND.md) ⚠️ REQUIRED if not found
 - [ ] Step 1: Analyze content → analysis.md
 - [ ] Step 2: Confirmation 1 - Content understanding ⚠️ REQUIRED
-- [ ] Step 3: Generate 3 outline + style variants
-- [ ] Step 4: Confirmation 2 - Outline & style & elements selection ⚠️ REQUIRED
-- [ ] Step 5: Generate images (sequential)
-- [ ] Step 6: Completion report
+- [ ] Step 3: Generate Xiaohongshu copy → post.md
+- [ ] Step 4: Generate 3 outline + style variants
+- [ ] Step 5: Confirmation 2 - Outline & style & elements selection ⚠️ REQUIRED
+- [ ] Step 6: Generate images (sequential)
+- [ ] Step 7: Completion report
 ```
 
 ### Flow
 
 ```
-Input → Analyze → [Confirm 1] → 3 Outlines → [Confirm 2: Outline + Style + Elements] → Generate → Complete
+Input → Analyze → [Confirm 1] → Generate post.md → 3 Outlines → [Confirm 2: Outline + Style + Elements] → Generate → Complete
 ```
 
 ### Step 0: Load Preferences (EXTEND.md) ⚠️
@@ -265,7 +267,61 @@ Read source content, save it if needed, and perform deep analysis.
 
 **After response**: Update `analysis.md` → Step 3
 
-### Step 3: Generate 3 Outline + Style Variants
+### Step 3: Generate Xiaohongshu Copy → `post.md` ⭐ NEW
+
+**Purpose**: Generate publish-ready Xiaohongshu copy (title + body + hashtags) based on source content.
+
+**⚠️ IMPORTANT**: `post.md` must be **直接可发布的纯文本格式**，小红书复制粘贴即用。
+
+**Actions**:
+1. **Analyze successful Xiaohongshu patterns**:
+   - Title formats: Questions, number lists, emotional hooks, trends
+   - Opening: Hook within first 2 lines
+   - Structure: Scannable with emojis, line breaks
+   - Closing: CTA (call-to-action)
+   - Hashtags: 3-8 relevant tags
+
+2. **Generate `post.md` with 纯文本格式**:
+   ```
+   [标题]
+
+   [正文 - 小红书风格，使用emoji，分段清晰]
+
+   [标签]
+   ```
+
+3. **Copy characteristics**:
+   - **Title**: 15-25字，包含关键词 + 情绪/数字/疑问
+   - **Opening**: 黄金3秒钩子，引发共鸣或好奇
+   - **Body**: 300-600字，emoji丰富，段落短小
+   - **Tone**: 对话式，真实感强，避免说教
+   - **Hashtags**: 3-8个，包含热门词 + 精准词
+   - **格式**: ❌ 无Markdown语法，❌ 无YAML，✅ 纯文本+emoji
+
+4. **Save to `post.md`**
+
+**Example format** (可直接复制到小红书):
+```
+从月薪12k到年薪百万，我只用了3年🚀
+
+刚毕业那会儿，我也是个迷茫的打工人...
+
+直到我发现了这个方法✨
+
+1️⃣ 第一步：xxx
+2️⃣ 第二步：xxx
+3️⃣ 第三步：xxx
+
+现在我已经实现了财务自由💰
+
+你也可以的！加油！
+
+#AI #职场 #成长 #干货
+```
+
+**After generation**: Display preview to user → Step 4
+
+### Step 4: Generate 3 Outline + Style Variants
 
 Based on analysis + user context, create three distinct strategy variants. Each variant includes both **outline structure** and **visual style recommendation**.
 
@@ -284,7 +340,7 @@ strategy: a  # a, b, or c
 name: Story-Driven
 style: warm  # recommended style for this strategy
 style_reason: "Warm tones enhance emotional storytelling and personal connection"
-elements:  # from style preset, can be customized in Step 4
+elements:  # from style preset, can be customized in Step 5
   background: solid-pastel
   decorations: [clouds, stars-sparkles]
   emphasis: star-burst
@@ -316,7 +372,7 @@ image_count: 5
 
 Reference: `references/workflows/outline-template.md`
 
-### Step 4: Confirmation 2 - Outline & Style & Elements Selection ⚠️
+### Step 5: Confirmation 2 - Outline & Style & Elements Selection ⚠️
 
 **Purpose**: User chooses outline strategy, confirms visual style, and customizes elements. **Do NOT skip.**
 
@@ -433,7 +489,7 @@ Display the selected style's default elements from preset, then ask:
 - Custom elements → parse user's preferences into elements fields
 - Update `outline.md` frontmatter with final style and elements
 
-### Step 5: Generate Images
+### Step 6: Generate Images
 
 With confirmed outline + style + layout:
 
@@ -475,7 +531,7 @@ If image generation skill supports `--sessionId`:
 2. Use same session ID for all images
 3. Ensures visual consistency across generated images
 
-### Step 6: Completion Report
+### Step 7: Completion Report
 
 ```
 ════════════════════════════════════════════════════════════
@@ -489,6 +545,8 @@ If image generation skill supports `--sessionId`:
 位置: [directory path]
 图片: N total
 
+✓ source-article.md
+✓ post.md (小红书发布文案)
 ✓ analysis.md
 ✓ outline-strategy-a.md
 ✓ outline-strategy-b.md
