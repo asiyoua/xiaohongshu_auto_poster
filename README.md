@@ -14,33 +14,56 @@
 
 ### 安装
 
-```bash
-# 1. 克隆仓库
-git clone https://github.com/asiyoua/xiaohongshu_auto_poster.git ~/.claude/skills/bxz-xhs
-cd ~/.claude/skills/bxz-xhs
+本项目包含两个部分，需要分别安装到不同目录：
 
-# 2. 安装 MCP 服务器（用于自动发布）
+```bash
+# 1. 克隆仓库（包含 Skill + MCP 源代码）
+git clone https://github.com/asiyoua/xiaohongshu_auto_poster.git ~/.claude/skills/bxz-xhs
+
+# 2. Skill 已经在正确位置，无需移动
+#    ~/.claude/skills/bxz-xhs/ ✅
+
+# 3. 安装 MCP 服务器（需要复制到 MCP 运行目录）
 mkdir -p ~/.claude/mcp-servers
-cp -r mcp ~/.claude/mcp-servers/redbook-mcp
+cp -r ~/.claude/skills/bxz-xhs/mcp ~/.claude/mcp-servers/redbook-mcp
 cd ~/.claude/mcp-servers/redbook-mcp
 npm install
 
-# 3. 配置 Gemini API Key
+# 4. 配置 Gemini API Key
 mkdir -p ~/.config/bxz-xhs
-cat > ~/.config/bxz-xhs/config.ini << EOF
+cat > ~/.config/bxz-xhs/config.ini << 'EOF'
 [gemini_nano]
 api_key=YOUR_API_KEY_HERE
 EOF
 
-# 4. 详细安装指南请查看
+# 5. 详细安装指南
 cat ~/.claude/skills/bxz-xhs/generator/WORKFLOW.md
+```
+
+### 安装后的目录结构
+
+```
+~/.claude/
+├── skills/
+│   └── bxz-xhs/                    ← Skill（留在这里，不要动）
+│       ├── SKILL.md
+│       ├── generator/
+│       ├── publisher/
+│       └── mcp/                    ← 源代码备份（可删除）
+│
+└── mcp-servers/                     ← MCP 运行目录（必须在这里）
+    └── redbook-mcp/                ← 从 skill 复制过来的
+        ├── redbook-poster.js       (拟人化发布核心)
+        ├── index.js
+        ├── package.json
+        └── node_modules/            (npm install 生成)
 ```
 
 **MCP 服务器说明**：
 - 本项目包含完整的 MCP 服务器代码（在 `mcp/` 目录）
 - 支持拟人化操作，降低机器人检测风险
 - 包含随机延迟、人类打字、鼠标轨迹等防检测功能
-- 无需额外下载，一步安装完成
+- **重要**：MCP 必须安装在 `~/.claude/mcp-servers/` 才能被调用
 
 ### 使用
 
