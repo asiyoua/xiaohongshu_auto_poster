@@ -117,40 +117,6 @@ xiaohongshu_auto_poster/
 /bxz-xhs --style cute --layout sparse
 ```
 
-## ⚙️ 配置
-
-### 发布工具配置
-
-`bxz-xhs-publisher` 支持三种配置方式（优先级从高到低）：
-
-**1. 命令行参数**
-```bash
-/bxz-xhs-publisher ~/Myxhs/ai-tools --mcp-server /custom/path
-/bxz-xhs-publisher ~/Myxhs/ai-tools --data-dir /custom/data
-```
-
-**2. 环境变量**
-```bash
-export REDBOOK_MCP_SERVER=/custom/path
-export REDBOOK_DATA_DIR=/custom/data
-```
-
-**3. 默认路径**
-```bash
-MCP 服务器: ~/.claude/mcp-servers/redbook-mcp
-数据目录:   ~/.claude/mcp-servers/redbook-data
-```
-
-### Gemini API 配置
-
-```bash
-# 配置文件位置
-~/.config/bxz-xhs/config.ini
-
-# 获取 API Key
-https://makersuite.google.com/app/apikey
-```
-
 ## 🔧 技术栈
 
 | 组件 | 技术 | 说明 |
