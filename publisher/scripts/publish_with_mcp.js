@@ -1,6 +1,21 @@
 #!/usr/bin/env node
 /**
  * 小红书发布脚本 - 使用 redbook-mcp
+ *
+ * 用法:
+ *   node publish_with_mcp.js <session-dir> [options]
+ *
+ * 参数:
+ *   session-dir    包含 post.md 或 outline.md 的目录
+ *
+ * 选项:
+ *   --preview      预览模式，不实际发布
+ *   --mcp-server   MCP 服务器目录（默认: ~/.claude/mcp-servers/redbook-mcp）
+ *   --data-dir     数据目录（默认: ~/.claude/mcp-servers/redbook-data）
+ *
+ * 环境变量:
+ *   REDBOOK_MCP_SERVER    MCP 服务器目录
+ *   REDBOOK_DATA_DIR      数据目录
  */
 
 import fs from 'fs';
@@ -11,14 +26,63 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// 计算相关路径（支持多种安装场景）
-const skillBase = path.resolve(__dirname, '../../..');
-const mcpBase = path.join(skillBase, '.claude/mcp-servers/redbook-mcp');
-const jsonPath = path.join(skillBase, '.claude/mcp-servers/redbook-data');
+// 解析命令行参数
+function parseArgs(args) {
+  const params = {
+    sessionDir: null,
+    previewMode: false,
+    mcpServer: null,
+    dataDir: null,
+  };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    switch (arg) {
+      case '--preview':
+        params.previewMode = true;
+        break;
+      case '--mcp-server':
+        params.mcpServer = args[++i];
+        break;
+      case '--data-dir':
+        params.dataDir = args[++i];
+        break;
+      default:
+        if (!arg.startsWith('--')) {
+          params.sessionDir = arg;
+        }
+        break;
+    }
+  }
+
+  return params;
+}
+
+// 获取配置路径（优先级：命令行参数 > 环境变量 > 默认值）
+function getConfigPaths(params) {
+  const home = process.env.HOME;
+
+  // MCP 服务器路径
+  const mcpServer = params.mcpServer
+    || process.env.REDBOOK_MCP_SERVER
+    || path.join(home, '.claude/mcp-servers/redbook-mcp');
+
+  // 数据目录路径
+  const dataDir = params.dataDir
+    || process.env.REDBOOK_DATA_DIR
+    || path.join(home, '.claude/mcp-servers/redbook-data');
+
+  return { mcpServer, dataDir };
+}
 
 // 动态导入 RedbookPoster
-async function getRedbookPoster() {
-  const posterPath = path.join(mcpBase, 'redbook-poster.js');
+async function getRedbookPoster(mcpServer) {
+  const posterPath = path.join(mcpServer, 'redbook-poster.js');
+
+  if (!fs.existsSync(posterPath)) {
+    throw new Error(`找不到 RedbookPoster: ${posterPath}\n请确保 MCP 服务器已安装，或使用 --mcp-server 参数指定路径`);
+  }
+
   const module = await import(posterPath);
   return module.RedbookPoster;
 }
@@ -89,9 +153,15 @@ function findImages(sessionDir) {
 }
 
 
-export async function publishToXiaohongshu(sessionDir, previewMode = false) {
-  const RedbookPoster = await getRedbookPoster();
-  const poster = new RedbookPoster(jsonPath);
+export async function publishToXiaohongshu(sessionDir, previewMode = false, mcpServer = null, dataDir = null) {
+  // 使用传入的参数或默认配置
+  const config = mcpServer || dataDir
+    ? { mcpServer: mcpServer || path.join(process.env.HOME, '.claude/mcp-servers/redbook-mcp'),
+        dataDir: dataDir || path.join(process.env.HOME, '.claude/mcp-servers/redbook-data') }
+    : getConfigPaths({});
+
+  const RedbookPoster = await getRedbookPoster(config.mcpServer);
+  const poster = new RedbookPoster(config.dataDir);
 
   try {
     console.log('🚀 启动发布流程...\n');
@@ -167,16 +237,37 @@ export async function publishToXiaohongshu(sessionDir, previewMode = false) {
 
 // CLI 入口
 const args = process.argv.slice(2);
-if (args.length >= 1) {
-  const sessionDir = args[0].replace(/^~/, process.env.HOME);
-  const previewMode = args.includes('--preview');
+const params = parseArgs(args);
 
-  publishToXiaohongshu(sessionDir, previewMode).then(result => {
+if (params.sessionDir) {
+  const sessionDir = params.sessionDir.replace(/^~/, process.env.HOME);
+  const config = getConfigPaths(params);
+
+  console.log('配置:');
+  console.log(`  MCP 服务器: ${config.mcpServer}`);
+  console.log(`  数据目录: ${config.dataDir}`);
+  console.log(`  会话目录: ${sessionDir}`);
+  console.log(`  预览模式: ${params.previewMode ? '是' : '否'}\n`);
+
+  publishToXiaohongshu(sessionDir, params.previewMode, config.mcpServer, config.dataDir).then(result => {
     process.exit(result.success ? 0 : 1);
   });
 } else {
   console.log('用法:');
+  console.log('  node publish_with_mcp.js <session-dir> [options]\n');
+  console.log('参数:');
+  console.log('  session-dir    包含 post.md 或 outline.md 的目录\n');
+  console.log('选项:');
+  console.log('  --preview      预览模式，不实际发布');
+  console.log('  --mcp-server   MCP 服务器目录');
+  console.log('  --data-dir     数据目录\n');
+  console.log('环境变量:');
+  console.log('  REDBOOK_MCP_SERVER    MCP 服务器目录');
+  console.log('  REDBOOK_DATA_DIR      数据目录\n');
+  console.log('示例:');
   console.log('  node publish_with_mcp.js ~/Myxhs/ai-tools');
   console.log('  node publish_with_mcp.js ~/Myxhs/ai-tools --preview');
+  console.log('  REDBOOK_MCP_SERVER=/custom/path node publish_with_mcp.js ~/Myxhs/ai-tools');
+  console.log('  node publish_with_mcp.js ~/Myxhs/ai-tools --mcp-server /custom/mcp\n');
   process.exit(1);
 }
