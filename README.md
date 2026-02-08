@@ -14,7 +14,31 @@
 
 ### 安装
 
-本项目包含两个部分，需要分别安装到不同目录：
+本项目包含两个部分（Skill + MCP），提供两种安装方式：
+
+---
+
+#### 方式一：小白模式（推荐）⭐
+
+**让 AI 帮你完成所有操作**，只需在 Claude Code 中说：
+
+```
+帮我安装小红书自动化工具，按照官方 README 的步骤执行
+```
+
+AI 会自动：
+1. ✅ 克隆仓库到正确位置
+2. ✅ 复制 MCP 到运行目录
+3. ✅ 安装 npm 依赖
+4. ✅ 提示你配置 API Key
+
+**遇到问题直接问 AI**，不用手动敲命令！
+
+---
+
+#### 方式二：开发者模式
+
+**手动执行命令**，适合熟悉命令行的用户：
 
 ```bash
 # 1. 克隆仓库（包含 Skill + MCP 源代码）
@@ -29,16 +53,17 @@ cp -r ~/.claude/skills/bxz-xhs/mcp ~/.claude/mcp-servers/redbook-mcp
 cd ~/.claude/mcp-servers/redbook-mcp
 npm install
 
-# 4. 配置 Gemini API Key
+# 4. 配置 Gemini API Key（替换 YOUR_API_KEY_HERE）
 mkdir -p ~/.config/bxz-xhs
 cat > ~/.config/bxz-xhs/config.ini << 'EOF'
 [gemini_nano]
 api_key=YOUR_API_KEY_HERE
 EOF
 
-# 5. 详细安装指南
-cat ~/.claude/skills/bxz-xhs/generator/WORKFLOW.md
+# 5. 获取 API Key：访问 https://makersuite.google.com/app/apikey
 ```
+
+---
 
 ### 安装后的目录结构
 
