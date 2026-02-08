@@ -189,6 +189,10 @@ A: `~/Myxhs/{topic-slug}/`
 
 欢迎提交 Issue 和 Pull Request！
 
+## 🙏 致谢
+
+本项目受到 [JimLiu/baoyu-skills](https://github.com/JimLiu/baoyu-skills) 的启发，感谢宝玉分享的 Claude Code 技能集。
+
 ## 📄 License
 
 MIT
